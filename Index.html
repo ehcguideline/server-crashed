@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Server Error — Server was crashed</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-color:#06070a;
+      --neon-green:#39ff14;
+      --accent:#00e5ff;
+      --muted:#9aa3b2;
+      --glass: rgba(255,255,255,0.03);
+      --danger:#ff4d4d;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Share Tech Mono", monospace;
+      background: radial-gradient(ellipse at 20% 10%, rgba(57,255,20,0.03), transparent 10%),
+                  linear-gradient(180deg,#02040a 0%, #07101a 60%),
+                  var(--bg-color);
+      color: #e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow:hidden;
+    }
+
+    .matrix {
+      position:fixed;
+      inset:0;
+      z-index:0;
+      opacity:0.12;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(0,0,0,0.2), transparent 20%),
+        linear-gradient(180deg, rgba(0,0,0,0.1), transparent 40%);
+      pointer-events:none;
+    }
+    .matrix::before{
+      content:'';
+      position:absolute; inset:0;
+      background-image: repeating-linear-gradient(180deg, rgba(0,255,0,0.02) 0 1px, transparent 1px 4px);
+      mix-blend-mode:screen;
+      transform:skewY(-6deg);
+      filter:blur(1px);
+    }
+
+    .container{
+      position:relative;
+      z-index:2;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:32px;
+    }
+
+    .card{
+      width:100%;
+      max-width:980px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      padding:36px;
+      border-radius:14px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      display:grid;
+      grid-template-columns: 1fr 320px;
+      gap:28px;
+      align-items:center;
+    }
+
+    .left h1{
+      margin:0 0 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight:700;
+      letter-spacing:1px;
+      font-size:34px;
+      color:var(--accent);
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .status{
+      display:inline-block;
+      background: linear-gradient(90deg, rgba(57,255,20,0.06), rgba(0,229,255,0.03));
+      border-left:3px solid var(--neon-green);
+      padding:8px 12px;
+      border-radius:6px;
+      color:var(--neon-green);
+      font-size:13px;
+      letter-spacing:0.8px;
+    }
+
+    .left p{
+      margin:14px 0 18px;
+      color:var(--muted);
+      line-height:1.6;
+      font-size:15px;
+    }
+
+    .error-lines{
+      background: #00000020;
+      border-radius:8px;
+      padding:14px;
+      font-size:13px;
+      color: #9ef59e;
+      max-height:180px;
+      overflow:auto;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+      border:1px solid rgba(0,255,0,0.03);
+    }
+
+    .error-lines code{
+      display:block;
+      white-space:pre-wrap;
+      font-family: "Share Tech Mono", monospace;
+    }
+
+    .right{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+      padding:20px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .meta{
+      display:flex;
+      gap:10px;
+      flex-direction:column;
+    }
+
+    .meta .item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:8px 6px;
+      border-radius:6px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .meta .item strong{color:#fff; font-weight:600; font-family: 'Orbitron', sans-serif;}
+
+    .btns{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:0;
+      padding:10px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      font-family: "Share Tech Mono", monospace;
+      font-size:13px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    }
+    .btn--primary{ background: linear-gradient(90deg,var(--neon-green), var(--accent)); color:#021019; font-weight:700;}
+    .btn--ghost{ background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--muted);}
+
+    .glitch{
+      position:relative;
+      display:inline-block;
+    }
+    .glitch::before, .glitch::after{
+      content:attr(data-text);
+      position:absolute;
+      left:0; top:0;
+      width:100%;
+      clip: rect(0, 100%, 0, 0);
+      -webkit-clip-path: inset(0 0 0 0);
+      pointer-events:none;
+    }
+    .glitch::before{
+      animation: glitch-top 2.5s infinite linear;
+      color:var(--neon-green);
+      z-index:2;
+      mix-blend-mode:screen;
+    }
+    .glitch::after{
+      animation: glitch-bottom 3s infinite linear;
+      color:var(--accent);
+      z-index:1;
+      mix-blend-mode:screen;
+    }
+    @keyframes glitch-top{
+      0%{clip:rect(0,900px,0,0); transform:translate(-1px,-1px)}
+      10%{clip:rect(2px,900px,40px,0); transform:translate(2px,-2px)}
+      20%{clip:rect(10px,900px,60px,0); transform:translate(-2px,1px)}
+      30%{clip:rect(4px,900px,20px,0); transform:translate(1px,0)}
+      40%{clip:rect(0,900px,0,0); transform:translate(0,0)}
+      100%{clip:rect(0,900px,0,0)}
+    }
+    @keyframes glitch-bottom{
+      0%{clip:rect(0,900px,0,0); transform:translate(0,0)}
+      10%{clip:rect(30px,900px,120px,0); transform:translate(-1px,2px)}
+      20%{clip:rect(10px,900px,48px,0); transform:translate(2px,-1px)}
+      30%{clip:rect(60px,900px,150px,0); transform:translate(-2px,1px)}
+      100%{clip:rect(0,900px,0,0)}
+    }
+
+    footer{
+      margin-top:18px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    @media (max-width:880px){
+      .card{grid-template-columns:1fr; padding:20px}
+      .right{order:2}
+      .left{order:1}
+    }
+
+  </style>
+</head>
+<body>
+  <div class="matrix" aria-hidden="true"></div>
+
+  <main class="container">
+    <section class="card" role="main" aria-labelledby="err-title">
+      <div class="left">
+        <h1 id="err-title">
+          <span class="glitch" data-text="Server was crashed">Server was crashed</span>
+        </h1>
+
+        <div class="status" aria-hidden="false">503 • Service Unavailable</div>
+
+        <p>
+          An unexpected error occurred on the server — the client request cannot be fulfilled.  
+          Below are system logs and possible recommendations.
+        </p>
+
+        <div class="error-lines" aria-live="polite">
+<code>
+[2025-10-27 14:15:03] ERROR  :: Kernel panic: resource constraint
+[2025-10-27 14:15:03] INFO   :: Unusual inbound connections detected: +12.7%
+[2025-10-27 14:15:04] WARN   :: Database pool exhausted (active 102/100)
+[2025-10-27 14:15:05] INFO   :: Attempting graceful shutdown...
+[2025-10-27 14:15:06] ERROR  :: Crash: unexpected null pointer at core/rt.c:103
+[2025-10-27 14:15:07] ACTION :: Please contact admin@yourdomain.tld
+</code>
+        </div>
+
+        <footer>
+          <div>Server ID: <strong>srv-007</strong> &nbsp; • &nbsp; Timestamp: <strong id="ts">2025-10-27 14:15:07</strong></div>
+        </footer>
+      </div>
+
+      <aside class="right" aria-label="details">
+        <div class="meta">
+          <div class="item"><span>Affected Components</span><strong>API • Frontend</strong></div>
+          <div class="item"><span>Root Cause (Possible)</span><strong>DB overload / memory leak</strong></div>
+          <div class="item"><span>Recommendation</span><strong>Restart service · Check logs</strong></div>
+        </div>
+
+        <div class="btns" role="group" aria-label="actions">
+          <button class="btn btn--primary" id="refreshBtn" title="Try reload">Try Reload</button>
+          <button class="btn btn--ghost" id="copyBtn" title="Copy diagnostics">Copy Diagnostics</button>
+          <button class="btn btn--ghost" id="contactBtn" title="Contact support">Contact Admin</button>
+        </div>
+
+        <p style="margin-top:12px; font-size:12px; color:var(--muted)">
+          This page simulates an "Error / Maintenance" state — please verify the actual server condition before proceeding.
+        </p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('ts').textContent = new Date().toISOString().replace('T',' ').slice(0,19);
+
+    document.getElementById('refreshBtn').addEventListener('click', ()=> {
+      const btn = document.getElementById('refreshBtn');
+      btn.textContent = 'Reloading...';
+      setTimeout(()=> location.reload(), 700);
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      const text = Array.from(document.querySelectorAll('.error-lines code')).map(c=>c.innerText).join('\\n');
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('Diagnostics copied to clipboard');
+      } catch(e) {
+        alert('Unable to copy — please copy manually.');
+      }
+    });
+
+    document.getElementById('contactBtn').addEventListener('click', ()=> {
+      window.location.href = 'mailto:admin@yourdomain.tld?subject=Server%20Error%20Report&body=Please%20investigate%20the%20server%20crash.%0A%0ATimestamp:%20' + encodeURIComponent(new Date().toISOString());
+    });
+  </script>
+</body>
+</html>
